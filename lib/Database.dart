@@ -13,8 +13,9 @@ class DBProvider {
 
   //getterらしい
   Future<Database> get database async {
-    if (_database != null)
+    if (_database != null) {
       return _database;
+    }
 
     // DBがなかったら作る
     _database = await initDB();
@@ -49,7 +50,7 @@ class DBProvider {
     return res;
   }
 
-  getAllItems() async {
+  Future<List<Item>> getAllItems() async {
     final db = await database;
     var res = await db.query(_tableName);
     List<Item> list =

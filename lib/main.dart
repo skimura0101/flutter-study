@@ -15,20 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    Item item = new Item();
-    item.catId = 1;
-    item.catItemName = "egg";
+    //DELETE FROM ITEMの処理したい
 
-    DBProvider.db.createItem(item);
-    //DBに値を入れる
-
-
-    //DBから値を取る
-    var res;
-    res = DBProvider.db.getItem(1);
-    print("ああああ");
-    print(res);
-    print("いいいい");
+    //DB登録テスト用のsetterたち
+//    Item item = new Item();
+//    item.catId = "1";
+//    item.catItemName = "apple";
+//    item.catExpirationDate = "7月8日";
+    //DBProvider.db.createItem(item);
 
     return MaterialApp(
       title: '賞味期限一覧',
@@ -56,7 +50,25 @@ class _ExpirationListState extends State<ExpirationList> {
       appBar: new AppBar(
         title: Text('一覧'),
       ),
-      body: new Center(),
+      body: FutureBuilder<List<Item>>(
+        future: DBProvider.db.getAllItems(),
+        builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot){
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index){
+               Item item = snapshot.data[index];
+              return new ListTile(
+                title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
+                leading: Text(item.expirationDate!=null?item.expirationDate:"日付の初期値"),
+              );
+            },
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.of(context).pushNamed('/AddPage');

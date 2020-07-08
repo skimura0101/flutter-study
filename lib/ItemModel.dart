@@ -12,7 +12,7 @@ String itemToJson(Item data) {
 }
 
 class Item {
-  int id;
+  String id;
   String itemName;
   String expirationDate;
 
@@ -34,8 +34,8 @@ class Item {
     "expiration_date": expirationDate,
   };
 
-  set catId(int Id){this.id = id;}
+  set catId(String id){this.id = id;}
   set catItemName(String itemName){this.itemName = itemName;}
-  set catExpirationName(String expirationDate){this.expirationDate = expirationDate;}
+  set catExpirationDate(String expirationDate){this.expirationDate = expirationDate;}
 
 }
