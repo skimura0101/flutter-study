@@ -15,14 +15,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    DBProvider dbProvider;
+    Item item = new Item();
+    item.catId = 1;
+    item.catItemName = "egg";
+
+    DBProvider.db.createItem(item);
     //DBに値を入れる
 
 
     //DBから値を取る
-//    var res;
-//    res = DBProvider.db.getClient(1);
-//    print(res);
+    var res;
+    res = DBProvider.db.getItem(1);
+    print("ああああ");
+    print(res);
+    print("いいいい");
 
     return MaterialApp(
       title: '賞味期限一覧',

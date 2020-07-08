@@ -11,6 +11,7 @@ class DBProvider {
 
   static Database _database;
 
+  //getterらしい
   Future<Database> get database async {
     if (_database != null)
       return _database;
@@ -24,7 +25,6 @@ class DBProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
 
     // import 'package:path/path.dart'; が必要
-    // なぜか サジェスチョンが出てこない
     String path = join(documentsDirectory.path, "ItemDB.db");
 
     return await openDatabase(path, version: 1, onCreate: _createTable);
@@ -32,10 +32,11 @@ class DBProvider {
 
   Future<void> _createTable(Database db, int version) async {
     return await db.execute(
-        "CREATE TABLE ITEM ("
+      // SQL文に適切な空白を入れないとエラーになる
+        "CREATE TABLE ITEM ( "
             "id TEXT PRIMARY KEY,"
             "item_name TEXT,"
-            "expiration_date TEXT,"
+            "expiration_date TEXT "
             ")"
     );
   }
@@ -76,4 +77,11 @@ class DBProvider {
     );
     return res;
   }
+
+  getItem(int id) async {
+    final db = await database;
+    var res =await  db.query("Item", where: "id = ?", whereArgs: [id]);
+    return res.isNotEmpty ? Item.fromMap(res.first) : Null ;
+  }
+
 }

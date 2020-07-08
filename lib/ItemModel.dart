@@ -33,4 +33,9 @@ class Item {
     "item_name": itemName,
     "expiration_date": expirationDate,
   };
+
+  set catId(int Id){this.id = id;}
+  set catItemName(String itemName){this.itemName = itemName;}
+  set catExpirationName(String expirationDate){this.expirationDate = expirationDate;}
+
 }
