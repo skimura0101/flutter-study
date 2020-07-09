@@ -34,8 +34,8 @@ class DBProvider {
   }
 
   //更新するときは33行目のversionにある番号を変えてから
-//  void _onUpgrade(Database db, int oldVersion, int newVersion) {
-//    if (oldVersion < newVersion) {
+  void _onUpgrade(Database db, int oldVersion, int newVersion) {
+    if (oldVersion < newVersion) {
 //      print("DB更新！！！");
 //      db.execute(
 //        // SQL文に適切な空白を入れないとエラーになる
@@ -46,8 +46,8 @@ class DBProvider {
 //              ")"
 //      );
 //      print("DB更新！！！");
-//    }
-//  }
+    }
+  }
 
   Future<void> _createTable(Database db, int version) async {
     return await db.execute(

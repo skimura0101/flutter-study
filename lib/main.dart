@@ -67,7 +67,8 @@ class _ExpirationListState extends State<ExpirationList> {
               itemBuilder: (BuildContext context, int index){
                Item item = snapshot.data[index];
               return Dismissible(
-                  key: Key(item.id.toString()),
+                  key: Key(index.toString()),
+                  direction: DismissDirection.endToStart,
                   background: Container(
                       alignment: Alignment.centerLeft,
                       color: Colors.redAccent[700]
@@ -75,13 +76,14 @@ class _ExpirationListState extends State<ExpirationList> {
                   onDismissed: (direction){
                     setState(() {
                       DBProvider.db.deleteItem(item.id);
-                      snapshot.data.removeAt(item.id);
+                      print("${item.id}を消す");
+                      snapshot.data.removeAt(index);
                     });
 
-//                    if (direction == DismissDirection.startToEnd){
-//                      Scaffold.of(context).showSnackBar(
-//                          SnackBar(content: Text("削除しました"))
-//                      );}
+                    if (direction == DismissDirection.endToStart){
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("削除しました"))
+                      );}
                   },
                 child:new ListTile(
                 title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
