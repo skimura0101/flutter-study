@@ -14,7 +14,7 @@ String itemToJson(Item data) {
 class Item {
   String id;
   String itemName;
-  String expirationDate;
+  DateTime expirationDate;
 
   Item({
     this.id,
@@ -25,17 +25,18 @@ class Item {
   factory Item.fromMap(Map<String, dynamic> json) => new Item(
     id: json["id"],
     itemName: json["item_name"],
-    expirationDate: json["expiration_date"],
+    expirationDate: DateTime.parse(json["expiration_date"]),
   );
 
   Map<String, dynamic> toMap() => {
     "id": id,
     "item_name": itemName,
-    "expiration_date": expirationDate,
+    "expiration_date": expirationDate.toUtc().toIso8601String(),
   };
 
-  set catId(String id){this.id = id;}
-  set catItemName(String itemName){this.itemName = itemName;}
-  set catExpirationDate(String expirationDate){this.expirationDate = expirationDate;}
+  //表示テスト用のsetter
+//  set catId(String id){this.id = id;}
+//  set catItemName(String itemName){this.itemName = itemName;}
+//  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
 
 }

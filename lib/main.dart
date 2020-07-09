@@ -15,14 +15,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    //DELETE FROM ITEMの処理したい
-
     //DB登録テスト用のsetterたち
 //    Item item = new Item();
 //    item.catId = "1";
 //    item.catItemName = "apple";
 //    item.catExpirationDate = "7月8日";
     //DBProvider.db.createItem(item);
+
+    //不要データ消す用
+    //DBProvider.db.deleteTable();
 
     return MaterialApp(
       title: '賞味期限一覧',
@@ -44,6 +45,9 @@ class ExpirationList extends StatefulWidget {
 }
 
 class _ExpirationListState extends State<ExpirationList> {
+
+  var format = new DateFormat.yMMMd();
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -60,7 +64,7 @@ class _ExpirationListState extends State<ExpirationList> {
                Item item = snapshot.data[index];
               return new ListTile(
                 title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
-                leading: Text(item.expirationDate!=null?item.expirationDate:"日付の初期値"),
+                leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
               );
             },
             );
@@ -85,7 +89,11 @@ class AddPage extends StatefulWidget {
 
 class _AddPageState extends State<AddPage> {
 
-  String _date = "未入力";
+  // Formウィジェット内の各フォームを識別するためのキーを設定
+  final _formKey = GlobalKey<FormState>();
+
+  String _itemName;
+  DateTime _expirationDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -93,51 +101,54 @@ class _AddPageState extends State<AddPage> {
       appBar: new AppBar(
         title: Text('日付入力'),
       ),
-      body: new Column(
-        children: <Widget>[
-          new Container(
-            width: MediaQuery.of(context).size.width,
-            child: new TextField(
-              decoration: InputDecoration(
-                  labelText: "登録名称",
-                  hintText: "例：ツナ缶",
-                  icon: Icon(Icons.fastfood),
-              ),
+      body: new Form(
+        key: _formKey,
+        child: new Column(
+          children: <Widget>[
+            new TextFormField(
+                decoration: InputDecoration(
+                    labelText: "登録名称",
+                    hintText: "例：ツナ缶",
+                    icon: Icon(Icons.fastfood)
             ),
-          ),
-          new Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(20.0),
-            child: new FlatButton(
-              child: Text(
-                '${_date}'
-              ),
-              color: Colors.blue,
-                textColor: Colors.white,
-                onPressed: (){
-                  DatePicker.showDatePicker(
+              onSaved: (value){
+                  _itemName = value;
+                  print(value);
+              },
+            ),
+            new FlatButton(
+              onPressed: (){
+                DatePicker.showDatePicker(
                   context,
                   showTitleActions: true,
-                  onChanged: (date) {},
-                  onConfirm: (date) {
-                    _date = DateFormat.yMMMd().format(date);
+                  onConfirm: (date){
                     setState(() {
+                      _expirationDate = date;
                     });
-                    },
-              );
-            }
+                  }
+                );
+              },
+              child: Text(DateFormat.yMMMd().format(_expirationDate)),
             ),
-          ),
           new RaisedButton(
               onPressed: (){
+                _submission();
                 Navigator.of(context).pushNamed('/');
               },
               child: Text('登録'),
               )
         ],
       ),
+      )
       );
   }
+
+  void _submission() {
+    this._formKey.currentState.save();
+    Item item = Item(id: null, itemName: _itemName, expirationDate: _expirationDate);
+    DBProvider.db.createItem(item);
+  }
+
 }
 
 

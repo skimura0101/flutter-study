@@ -55,6 +55,11 @@ class DBProvider {
     var res = await db.query(_tableName);
     List<Item> list =
     res.isNotEmpty ? res.map((c) => Item.fromMap(c)).toList() : [];
+
+    if (list != null){
+      list.sort((a,b) => a.expirationDate.compareTo(b.expirationDate));
+    }
+
     return list;
   }
 
@@ -85,4 +90,12 @@ class DBProvider {
     return res.isNotEmpty ? Item.fromMap(res.first) : Null ;
   }
 
+  deleteTable() async {
+    final db = await database;
+    var res = db.delete(
+        _tableName,
+    );
+    return res;
+
+  }
 }
