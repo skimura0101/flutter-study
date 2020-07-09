@@ -111,6 +111,14 @@ class _AddPageState extends State<AddPage> {
                     hintText: "例：ツナ缶",
                     icon: Icon(Icons.fastfood)
             ),
+              validator: (value){
+                if (value.isEmpty) {
+                  return '入力してください';
+                } else if(value.length > 25) {
+                  return '25字以内で入力してください';
+                }
+                return null;
+              },
               onSaved: (value){
                   _itemName = value;
                   print(value);
@@ -132,8 +140,11 @@ class _AddPageState extends State<AddPage> {
             ),
           new RaisedButton(
               onPressed: (){
-                _submission();
-                Navigator.of(context).pushNamed('/');
+                if (_formKey.currentState.validate()) {
+                  // If the form is valid, display a snackbar. In the real world,
+                  // you'd often call a server or save the information in a database.
+                  _submission();
+                }
               },
               child: Text('登録'),
               )
@@ -145,10 +156,14 @@ class _AddPageState extends State<AddPage> {
 
   void _submission() {
     this._formKey.currentState.save();
-    Item item = Item(id: null, itemName: _itemName, expirationDate: _expirationDate);
-    DBProvider.db.createItem(item);
-  }
 
+    if((_expirationDate != null) && (_itemName.isNotEmpty )) {
+      Item item = Item(
+          id: null, itemName: _itemName, expirationDate: _expirationDate);
+      DBProvider.db.createItem(item);
+      Navigator.of(context).pushNamed('/');
+    }
+  }
 }
 
 
