@@ -17,13 +17,17 @@ class MyApp extends StatelessWidget {
 
     //DB登録テスト用のsetterたち
 //    Item item = new Item();
-//    item.catId = "1";
+//    item.catId = 1;
 //    item.catItemName = "apple";
-//    item.catExpirationDate = "7月8日";
-    //DBProvider.db.createItem(item);
+//    //item.catExpirationDate = "7月8日";
+//    DBProvider.db.createItem(item);
 
     //不要データ消す用
     //DBProvider.db.deleteTable();
+
+
+    //DBProvider.db.alterTable();
+
 
     return MaterialApp(
       title: '賞味期限一覧',
@@ -62,10 +66,29 @@ class _ExpirationListState extends State<ExpirationList> {
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index){
                Item item = snapshot.data[index];
-              return new ListTile(
+              return Dismissible(
+                  key: Key(item.id.toString()),
+                  background: Container(
+                      alignment: Alignment.centerLeft,
+                      color: Colors.redAccent[700]
+                  ),
+                  onDismissed: (direction){
+                    setState(() {
+                      DBProvider.db.deleteItem(item.id);
+                      snapshot.data.removeAt(item.id);
+                    });
+
+//                    if (direction == DismissDirection.startToEnd){
+//                      Scaffold.of(context).showSnackBar(
+//                          SnackBar(content: Text("削除しました"))
+//                      );}
+                  },
+                child:new ListTile(
                 title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
+                subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
                 leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
-              );
+              )
+                );
             },
             );
           } else {

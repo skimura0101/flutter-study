@@ -12,7 +12,7 @@ String itemToJson(Item data) {
 }
 
 class Item {
-  String id;
+  int id;
   String itemName;
   DateTime expirationDate;
 
@@ -35,8 +35,8 @@ class Item {
   };
 
   //表示テスト用のsetter
-//  set catId(String id){this.id = id;}
-//  set catItemName(String itemName){this.itemName = itemName;}
-//  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
+  set catId(int id){this.id = id;}
+  set catItemName(String itemName){this.itemName = itemName;}
+  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
 
 }

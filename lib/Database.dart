@@ -13,6 +13,8 @@ class DBProvider {
 
   //getterらしい
   Future<Database> get database async {
+
+
     if (_database != null) {
       return _database;
     }
@@ -28,14 +30,30 @@ class DBProvider {
     // import 'package:path/path.dart'; が必要
     String path = join(documentsDirectory.path, "ItemDB.db");
 
-    return await openDatabase(path, version: 1, onCreate: _createTable);
+    return await openDatabase(path, version: 5, onCreate: _createTable, onUpgrade: _onUpgrade);
   }
+
+  //更新するときは33行目のversionにある番号を変えてから
+//  void _onUpgrade(Database db, int oldVersion, int newVersion) {
+//    if (oldVersion < newVersion) {
+//      print("DB更新！！！");
+//      db.execute(
+//        // SQL文に適切な空白を入れないとエラーになる
+//          "CREATE TABLE ITEM ( "
+//              "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+//              "item_name TEXT,"
+//              "expiration_date TEXT "
+//              ")"
+//      );
+//      print("DB更新！！！");
+//    }
+//  }
 
   Future<void> _createTable(Database db, int version) async {
     return await db.execute(
       // SQL文に適切な空白を入れないとエラーになる
         "CREATE TABLE ITEM ( "
-            "id TEXT PRIMARY KEY,"
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
             "item_name TEXT,"
             "expiration_date TEXT "
             ")"
@@ -74,7 +92,7 @@ class DBProvider {
     return res;
   }
 
-  deleteItem(String id) async {
+  deleteItem(int id) async {
     final db = await database;
     var res = db.delete(
         _tableName,
@@ -97,5 +115,11 @@ class DBProvider {
     );
     return res;
 
+  }
+
+  alterTable() async {
+    final db = await database;
+    var res = await db.execute("ALTER TABLE ITEM ALTER COLUMN id INTEGER");
+    return res;
   }
 }
