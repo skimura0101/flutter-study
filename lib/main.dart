@@ -68,7 +68,7 @@ class _ExpirationListState extends State<ExpirationList> {
                           SnackBar(content: Text("削除しました"))
                       );}
                   },
-                child: list(item)
+                child: listTile(item)
                 );
             },
             );
@@ -86,7 +86,7 @@ class _ExpirationListState extends State<ExpirationList> {
   }
 
   //背景色の表示わけメソッド
-  Widget list(Item item){
+  Widget listTile(Item item){
 
     Color _backgroundColor = Colors.white; //通常は白
 
@@ -165,7 +165,6 @@ class _AddPageState extends State<AddPage> {
               },
               onSaved: (value){
                   _itemName = value;
-                  print(value);
               },
             ),
             new SizedBox(
