@@ -11,9 +11,8 @@ class DBProvider {
 
   static Database _database;
 
-  //getterらしい
+  //getter
   Future<Database> get database async {
-
 
     if (_database != null) {
       return _database;
@@ -24,29 +23,16 @@ class DBProvider {
     return _database;
   }
 
+  /*
+   * DB作成用のメソッド。
+   */
   Future<Database> initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
 
     // import 'package:path/path.dart'; が必要
     String path = join(documentsDirectory.path, "ItemDB.db");
 
-    return await openDatabase(path, version: 5, onCreate: _createTable, onUpgrade: _onUpgrade);
-  }
-
-  //更新するときは33行目のversionにある番号を変えてから
-  void _onUpgrade(Database db, int oldVersion, int newVersion) {
-    if (oldVersion < newVersion) {
-//      print("DB更新！！！");
-//      db.execute(
-//        // SQL文に適切な空白を入れないとエラーになる
-//          "CREATE TABLE ITEM ( "
-//              "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-//              "item_name TEXT,"
-//              "expiration_date TEXT "
-//              ")"
-//      );
-//      print("DB更新！！！");
-    }
+    return await openDatabase(path, version: 5, onCreate: _createTable);
   }
 
   Future<void> _createTable(Database db, int version) async {
@@ -62,18 +48,21 @@ class DBProvider {
 
   static final _tableName = "Item";
 
+  //登録用のメソッド。
   createItem(Item item) async {
     final db = await database;
     var res = await db.insert(_tableName, item.toMap());
     return res;
   }
 
+  //一覧表示用のメソッド
   Future<List<Item>> getAllItems() async {
     final db = await database;
     var res = await db.query(_tableName);
     List<Item> list =
     res.isNotEmpty ? res.map((c) => Item.fromMap(c)).toList() : [];
 
+    //日付の昇順でソート
     if (list != null){
       list.sort((a,b) => a.expirationDate.compareTo(b.expirationDate));
     }
@@ -81,17 +70,7 @@ class DBProvider {
     return list;
   }
 
-  updateItem(Item item) async {
-    final db = await database;
-    var res  = await db.update(
-        _tableName,
-        item.toMap(),
-        where: "id = ?",
-        whereArgs: [item.id]
-    );
-    return res;
-  }
-
+  //削除用のメソッド
   deleteItem(int id) async {
     final db = await database;
     var res = db.delete(
@@ -99,27 +78,6 @@ class DBProvider {
         where: "id = ?",
         whereArgs: [id]
     );
-    return res;
-  }
-
-  getItem(int id) async {
-    final db = await database;
-    var res =await  db.query("Item", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? Item.fromMap(res.first) : Null ;
-  }
-
-  deleteTable() async {
-    final db = await database;
-    var res = db.delete(
-        _tableName,
-    );
-    return res;
-
-  }
-
-  alterTable() async {
-    final db = await database;
-    var res = await db.execute("ALTER TABLE ITEM ALTER COLUMN id INTEGER");
     return res;
   }
 }

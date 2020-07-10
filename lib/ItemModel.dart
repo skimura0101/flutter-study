@@ -1,15 +1,9 @@
 import 'dart:convert';
 
-Item itemFromJson(String str) {
-  final jsonData = json.decode(str);
-  return Item.fromMap(jsonData);
-}
-
-String itemToJson(Item data) {
-  final dyn = data.toMap();
-  return json.encode(dyn);
-}
-
+/*
+ * ItemのModelクラス
+ *
+*/
 class Item {
   int id;
   String itemName;
@@ -32,10 +26,14 @@ class Item {
     "item_name": itemName,
     "expiration_date": expirationDate.toUtc().toIso8601String(),
   };
+}
 
-  //表示テスト用のsetter
-//  set catId(int id){this.id = id;}
-//  set catItemName(String itemName){this.itemName = itemName;}
-//  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
+Item itemFromJson(String str) {
+  final jsonData = json.decode(str);
+  return Item.fromMap(jsonData);
+}
 
+String itemToJson(Item data) {
+  final dyn = data.toMap();
+  return json.encode(dyn);
 }

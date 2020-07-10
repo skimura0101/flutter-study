@@ -3,37 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'Database.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
 
-    //DB登録テスト用のsetterたち
-//    Item item = new Item();
-//    item.catId = 1;
-//    item.catItemName = "apple";
-//    //item.catExpirationDate = "7月8日";
-//    DBProvider.db.createItem(item);
-
-    //不要データ消す用
-    //DBProvider.db.deleteTable();
-
     return MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: [
-        const Locale("en"),
-        const Locale("ja"),
-      ],
-
       title: '賞味期限一覧',
       routes: <String, WidgetBuilder>{
         '/AddPage':(_) => new AddPage(),
@@ -54,7 +33,8 @@ class ExpirationList extends StatefulWidget {
 
 class _ExpirationListState extends State<ExpirationList> {
 
-  var format = new DateFormat.yMMMd();
+  var dateFormat = new DateFormat.yMMMd();
+  static int _cautionDate = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +60,9 @@ class _ExpirationListState extends State<ExpirationList> {
                   onDismissed: (direction){
                     setState(() {
                       DBProvider.db.deleteItem(item.id);
-                      print("${item.id}を消す");
                       snapshot.data.removeAt(index);
                     });
-
+                    //右から左にスワイプした時にメッセージを表示する
                     if (direction == DismissDirection.endToStart){
                       Scaffold.of(context).showSnackBar(
                           SnackBar(content: Text("削除しました"))
@@ -93,52 +72,53 @@ class _ExpirationListState extends State<ExpirationList> {
                 );
             },
             );
-          } else {
-            return Center(child: CircularProgressIndicator());
           }
-        },
+            return new Center(child: Text("表示するデータがありません"));
+        }
       ),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
         onPressed: (){
-          Navigator.of(context).pushNamed('/AddPage');
+          Navigator.of(context).pushNamed('/AddPage'); //日付入力画面に遷移する
         },
       ),
     );
   }
 
+  //背景色の表示わけメソッド
   Widget list(Item item){
+
+    Color _backgroundColor = Colors.white; //通常は白
+
+    //賞味期限が今日より前だったら背景をグレーにする
     if(item.expirationDate.isBefore(DateTime.now())){
-      return new Container(
+      _backgroundColor = Colors.grey;
+
+      //賞味期限が今日から3日以内だったら背景を黄色にする
+    } else if(betweenCautionDate(item.expirationDate)){
+      _backgroundColor = Colors.yellow;
+    }
+    return new Container(
         decoration: new BoxDecoration(
-          color: Colors.grey
+            color: _backgroundColor
         ),
         child: new ListTile(
           title: Text(item.itemName),
-          leading: Text(format.format(item.expirationDate)),
+          leading: Text(dateFormat.format(item.expirationDate)),
         )
-      );
-    } else if(item.expirationDate.subtract(new Duration(days: 3)).isBefore(DateTime.now())){
-      return new Container(
-          decoration: new BoxDecoration(
-              color: Colors.yellow
-          ),
-          child: new ListTile(
-            title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
-            subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
-            leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
-          )
-      );
-    }
-    return new Container(
-       child: new ListTile(
-         title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
-         subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
-         leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
-    )
     );
   }
+
+  //協調すべき日付か判定するメソッド
+  bool betweenCautionDate(DateTime expirationDate){
+    return expirationDate.subtract(new Duration(days: _cautionDate)).isBefore(DateTime.now());
+  }
+
 }
 
+/*
+ *日付入力画面。
+ */
 class AddPage extends StatefulWidget {
   @override
   _AddPageState createState() => _AddPageState();
@@ -161,6 +141,8 @@ class _AddPageState extends State<AddPage> {
       body: new Form(
         key: _formKey,
         child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             new TextFormField(
                 decoration: InputDecoration(
@@ -186,33 +168,39 @@ class _AddPageState extends State<AddPage> {
                   print(value);
               },
             ),
-            new FlatButton(
-              onPressed: (){
-                DatePicker.showDatePicker(
-                  context,
-//                  locale: const Locale("ja","JP"),
-                  showTitleActions: true,
-                  onConfirm: (date){
-                    setState(() {
-                      _expirationDate = date;
-                    });
-                  }
-                );
-              },
-              child: Text(DateFormat.yMMMd().format(_expirationDate)),
+            new SizedBox(
+              width: 400,
+              height: 50,
+              child: new FlatButton(
+                onPressed: (){
+                  DatePicker.showDatePicker(
+                      context,
+                      showTitleActions: true,
+                      onConfirm: (date){
+                        setState(() {
+                          _expirationDate = date;
+                        });
+                      }
+                      );
+                  },
+                child: new Text(
+                    DateFormat.yMMMd().format(_expirationDate),
+                  style: TextStyle(fontSize: 25.0),
+                ),
+              ),
             ),
           new RaisedButton(
-              onPressed: (){
-                if (_formKey.currentState.validate()) {
-                  _submission();
-                }
+            onPressed: (){
+              if (_formKey.currentState.validate()) {
+                _submission();
+              }
               },
-              child: Text('登録'),
-              )
-        ],
-      ),
+            child: Text('登録'),
+          )
+          ],
+        ),
       )
-      );
+    );
   }
 
   void _submission() {
@@ -222,10 +210,7 @@ class _AddPageState extends State<AddPage> {
       Item item = Item(
           id: null, itemName: _itemName, expirationDate: _expirationDate);
       DBProvider.db.createItem(item); // SQliteへの登録処理
-      Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false); //遷移時にbackさせない
+      Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false); //一覧遷移時にbackさせない
     }
   }
 }
-
-
-

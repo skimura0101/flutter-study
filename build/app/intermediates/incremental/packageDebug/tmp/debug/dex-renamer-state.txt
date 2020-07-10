@@ -1,4 +1,4 @@
-#Thu Jul 09 19:12:15 GMT+09:00 2020
+#Fri Jul 10 11:23:12 GMT+09:00 2020
 base.0=C\:\\Users\\tie306216\\AndroidStudioProjects\\expiration_date_list\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex
