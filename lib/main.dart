@@ -2,9 +2,8 @@ import 'package:expiration_date_list/ItemModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
 import 'Database.dart';
-import 'dart:io';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,11 +24,16 @@ class MyApp extends StatelessWidget {
     //不要データ消す用
     //DBProvider.db.deleteTable();
 
-
-    //DBProvider.db.alterTable();
-
-
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        const Locale("en"),
+        const Locale("ja"),
+      ],
+
       title: '賞味期限一覧',
       routes: <String, WidgetBuilder>{
         '/AddPage':(_) => new AddPage(),
@@ -85,11 +89,7 @@ class _ExpirationListState extends State<ExpirationList> {
                           SnackBar(content: Text("削除しました"))
                       );}
                   },
-                child:new ListTile(
-                title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
-                subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
-                leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
-              )
+                child: list(item)
                 );
             },
             );
@@ -103,6 +103,38 @@ class _ExpirationListState extends State<ExpirationList> {
           Navigator.of(context).pushNamed('/AddPage');
         },
       ),
+    );
+  }
+
+  Widget list(Item item){
+    if(item.expirationDate.isBefore(DateTime.now())){
+      return new Container(
+        decoration: new BoxDecoration(
+          color: Colors.grey
+        ),
+        child: new ListTile(
+          title: Text(item.itemName),
+          leading: Text(format.format(item.expirationDate)),
+        )
+      );
+    } else if(item.expirationDate.subtract(new Duration(days: 3)).isBefore(DateTime.now())){
+      return new Container(
+          decoration: new BoxDecoration(
+              color: Colors.yellow
+          ),
+          child: new ListTile(
+            title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
+            subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
+            leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
+          )
+      );
+    }
+    return new Container(
+       child: new ListTile(
+         title: Text(item.itemName!=null?item.itemName:"登録名称の初期値"),
+         subtitle: Text(item.id!=null?item.id.toString():"idないよ"),
+         leading: Text(item.expirationDate!=null?format.format(item.expirationDate).toString():"日付の初期値"),
+    )
     );
   }
 }
@@ -137,12 +169,17 @@ class _AddPageState extends State<AddPage> {
                     icon: Icon(Icons.fastfood)
             ),
               validator: (value){
-                if (value.isEmpty) {
+                if (value.isEmpty) { //必須精査
                   return '入力してください';
-                } else if(value.length > 25) {
+                } else if(value.length > 25) { //文字数精査
                   return '25字以内で入力してください';
                 }
                 return null;
+              },
+              onChanged: (value){ //25文字以上入力された時点で警告文を出す
+                  if(value.length > 25) {
+                    _formKey.currentState.validate();
+                  }
               },
               onSaved: (value){
                   _itemName = value;
@@ -153,6 +190,7 @@ class _AddPageState extends State<AddPage> {
               onPressed: (){
                 DatePicker.showDatePicker(
                   context,
+//                  locale: const Locale("ja","JP"),
                   showTitleActions: true,
                   onConfirm: (date){
                     setState(() {
@@ -166,8 +204,6 @@ class _AddPageState extends State<AddPage> {
           new RaisedButton(
               onPressed: (){
                 if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
                   _submission();
                 }
               },
@@ -180,13 +216,13 @@ class _AddPageState extends State<AddPage> {
   }
 
   void _submission() {
-    this._formKey.currentState.save();
+    this._formKey.currentState.save(); //onSaved内に記述された処理が実行される
 
     if((_expirationDate != null) && (_itemName.isNotEmpty )) {
       Item item = Item(
           id: null, itemName: _itemName, expirationDate: _expirationDate);
-      DBProvider.db.createItem(item);
-      Navigator.of(context).pushNamed('/');
+      DBProvider.db.createItem(item); // SQliteへの登録処理
+      Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false); //遷移時にbackさせない
     }
   }
 }

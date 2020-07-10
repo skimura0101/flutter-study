@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 Item itemFromJson(String str) {
@@ -35,8 +34,8 @@ class Item {
   };
 
   //表示テスト用のsetter
-  set catId(int id){this.id = id;}
-  set catItemName(String itemName){this.itemName = itemName;}
-  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
+//  set catId(int id){this.id = id;}
+//  set catItemName(String itemName){this.itemName = itemName;}
+//  set catExpirationDate(DateTime expirationDate){this.expirationDate = expirationDate;}
 
 }
