@@ -2,14 +2,14 @@
 Flutterに触ったことがなかったので、以下の順序で学習してみました。<br>
 学んだこともあわせてまとめてみます。
 
-## 1.環境構築、ハンズオン
+## 1. 環境構築、ハンズオン
 公式の[導入手順・ハンズオン](https://flutter.dev/docs/get-started/install)（英語）を実施してみました。（part1まで）<br>
 <br>
 非公式ですが、[翻訳版](https://qiita.com/kainos/items/1700bf245c72b6b2487d)もありました。<br>
 <br>
 ハンズオンでなんとなくFlutterやDartについて学べたので、これ以降はやりたいことベースで実装方法を調べたいと思います。
 
-## 2．画面遷移
+## 2. 画面遷移
 [参考サイト](https://www.isoroot.jp/blog/2475/)<br>
 Navigatorを使います。<br>
 
@@ -64,7 +64,7 @@ void _submission() {
   }
 ```
 
-## 画面項目（Widget）
+## 3. 画面項目（Widget）
 
 Flutterでの開発は基本的に、画面のスペースをどんなWidget（部品）で埋めますか、というものみたいだ。<br>
 どのようなWidgetがあるかは[こちら](https://qiita.com/matsukatsu/items/e289e30231fffb1e4502#layout)を参照すると一覧がまとまっている。<br>
@@ -154,7 +154,7 @@ new RaisedButton(
 ```
 ※_submission()は[2. 画面遷移](#2．画面遷移)で遷移時に前画面に遷移させない実装の紹介で出してます。
 
-## DBアクセス（SQlite3）
+## 4. DBアクセス（SQlite3）
 
 今回はSQliteを選びました。<br>
 APIがあったのと、実装を参考にしたサイトでSQLiteを使っているものが多かったからです。
@@ -263,7 +263,7 @@ void _onUpgrade(Database db, int oldVersion, int newVersion) {
   }
 ```
 
-## 入力値の登録（Formクラス）とバリデーション
+## 5. 入力値の登録（Formクラス）とバリデーション
 
 [参考](https://flutter.dev/docs/cookbook/forms/validation)<br>
 Fromを使うとバリデーションの処理ができるようになります。FromのWidgetが持つformKeyがポイントです。<br>
@@ -349,13 +349,13 @@ createItem(Item item) async {
 }
 ```
 
-## 一覧表示
+## 6. 一覧表示
 
 公式のハンズオンでも紹介されている[FutureBuilder](https://api.flutter.dev/flutter/widgets/FutureBuilder-class.html)を使いました。<br>
 
 ListViewやFuture型が良くわかっていないので今後調べます。
 
-## 削除実装
+## 7. 削除実装
 
 削除処理自体はDBクラス内の`deleteItemメソッド`で実施しています。
 
@@ -397,7 +397,7 @@ Dismissible(
 
 `listTileメソッド`では表示するデータのうち、賞味期限の項目を現在の日付と比較し、その条件によって背景色を変えたListTileを返すような実装にしています。
 
-## 細かい修正
+## 8. 細かい修正
 
 * 日にちによって背景色を変える
 
@@ -448,12 +448,12 @@ onChanged: (value){ //25文字以上入力された時点で警告文を出す
 
 入力された値をすぐに参照できるようなので、入力した文字が25文字以上に到達した時点でValidatorを呼び出しています。
 
-## わかったこと
+## 9. わかったこと
 
 * 基本的な実装の仕方、構文
 * 他の人が書いたソースコードが読めるようになった
 
-## わかっていないこと
+## 10. わかっていないこと
 
 表面的な理解にとどまったので、内部の動きをより追いたい
 
