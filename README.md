@@ -88,7 +88,7 @@ Widget build(BuildContext context) {
 }
 ```
 
-1. [FloatingActionButton](https://api.flutter.dev/flutter/material/FloatingActionButton-class.html)<br>
+2. [FloatingActionButton](https://api.flutter.dev/flutter/material/FloatingActionButton-class.html)<br>
 公式のハンズオンでも出てくる。onPressed属性遷移先を設定して、クリックした際に日付入力画面へ遷移するために使った。<br>
 
 ```
@@ -101,16 +101,16 @@ floatingActionButton: FloatingActionButton(
       )
 ```
 
-1. [TextField](https://api.flutter.dev/flutter/material/TextField-class.html)　※最終的な実装では不使用
+3. [TextField](https://api.flutter.dev/flutter/material/TextField-class.html)　※最終的な実装では不使用
 
 超基本的なテキスト入力部品。`onChanged属性`や`onSubmitted属性`に処理を記述することで入力変更時の挙動や入力確定時の挙動を設定できる。<br>（使用しなかった理由は[Formクラス](#入力値の登録（Formクラス）)で記述します。）
 
-1. [FlatButton](https://api.flutter.dev/flutter/material/FlatButton-class.html)
+4. [FlatButton](https://api.flutter.dev/flutter/material/FlatButton-class.html)
 
 名前通りフラットなボタン。今回は`onPressed属性`にShowDatePickerを埋め込んだ。<br>
 ボタン上に初期表示する日付はText()で実装している。
 
-1. [ShowDatePicker](https://api.flutter.dev/flutter/material/showDatePicker.html)
+5. [ShowDatePicker](https://api.flutter.dev/flutter/material/showDatePicker.html)
 
 FlatButtonをクリックした時に呼び出すように実装した。
 日付入力するWidget。上下にスライドさせて年・月・日が選べるもの。`onConfirm属性`内でメンバ変数に入力値を詰め込む実装にしている。
@@ -137,7 +137,7 @@ new FlatButton(
 )
 ```
 
-1. [RaisedButton](https://api.flutter.dev/flutter/material/RaisedButton-class.html)
+6. [RaisedButton](https://api.flutter.dev/flutter/material/RaisedButton-class.html)
 
 少しふくらみのあるボタン。<br>
 登録処理を実行する登録ボタンに使用した。
